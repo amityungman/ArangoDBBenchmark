@@ -9,6 +9,7 @@ import java.io.IOException;
  * Created by Amit on 31/10/2016.
  */
 public class ReadWriteDeleteUpdateTest {
+    public static final String NOT_IMPLEMENTED = "NOT IMPLEMENTED | ";
     private static boolean isRebuildMode = false;
     private static long _timer = 0;
 
@@ -77,57 +78,57 @@ public class ReadWriteDeleteUpdateTest {
 
     private static void updateAnArtworkName(String originalName, String newName) {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
     private static void createAndConnectTakingPhotos() {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
     private static void deletePhotographyMovement() {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
     private static void updateEdgesWeight(String edgeTypeName, double weight) {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
     private static void deleteAllParisianPainters() {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
     private static void searchForName(String name, boolean isFuzzySearch) {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
     private static void searchForDiedAfterDate(String deathDate) {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
     private static void searchInDescription(String searchWord) {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
     private static void findShortestPath(String firstNode, String secondNode) {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
     private static void findShortestPathNotUsingArtMovement(String firstNode, String secondNode) {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
     private static void findLightestPath(String firstNode, String secondNode) {
         //TODO implement
-        System.out.print("NOT IMPLEMENTED");
+        System.out.print(NOT_IMPLEMENTED);
     }
 
 

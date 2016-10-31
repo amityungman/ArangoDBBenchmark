@@ -182,7 +182,6 @@ public class ArtistsTest {
             if(arangoDriver.getGraphList().contains(graphName))
                 return arangoDriver.getGraph(graphName);
             graph = arangoDriver.createGraph(graphName,true);
-            System.out.println("Graph created successfully");
         } catch (ArangoException e) {
             System.out.println("Failed to delete graph; " + e.getMessage());
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

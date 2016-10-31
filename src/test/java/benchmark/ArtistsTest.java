@@ -10,6 +10,7 @@ import com.arangodb.util.MapBuilder;
 import com.github.sommeri.less4j.core.compiler.expressions.strings.StringFormatter;
 import sparql.DBPediaSparqlQuerier;
 import sparql.dbpediaObjects.DBPediaArtist;
+import sparql.dbpediaObjects.DBPediaArtwork;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,13 +29,15 @@ public class ArtistsTest {
     public static final String graphName = "Art";
 
     public static final String artistsCollectionName = "Artists";
-    public static final String locationsCollectionName = "Location";
+    public static final String locationsCollectionName = "Locations";
     public static final String artMovementCollectionName = "ArtMovements";
-    public static final String artFieldCollectionName = "artField";
+    public static final String artFieldCollectionName = "ArtFields";
+    public static final String artworkCollectionName = "Artworks";
     public static final String bornInEdgeCollection = "BORN_IN";
     public static final String deathInEdgeCollection = "DIED_IN";
     public static final String memberOfEdgeCollection = "MEMBER_OF";
     public static final String describedByEdgeCollection = "DESCRIBED_BY";
+    public static final String createdByEdgeCollection = "CREATED_BY";
 
 
     public static void main(String[] args) throws IOException, ArangoException {
@@ -115,6 +118,11 @@ public class ArtistsTest {
                     arangoDriver.graphCreateEdge(graphName, describedByEdgeCollection, null, artistVertex.getDocumentHandle(), artField.getDocumentHandle());
                     edgesCounter++;
                 }
+                for(DBPediaArtwork artwork : DBPediaSparqlQuerier.getAtristArtwork(artist.getWikiPageID())) {
+                    DocumentEntity<DBPediaArtwork> artworkEntity = getOrCreateVertex(arangoDriver, graphName, artworkCollectionName, artwork.getName(), artwork, DBPediaArtwork.class);
+                    arangoDriver.graphCreateEdge(graphName, createdByEdgeCollection, null, artworkEntity.getDocumentHandle(), artistVertex.getDocumentHandle());
+                    edgesCounter++;
+                }
 
                 String query = "FOR t IN Artists RETURN t";
                 Map<String, Object> bindVars = new MapBuilder().get();
@@ -160,6 +168,7 @@ public class ArtistsTest {
         addCollectionIfNotExists(arangoDriver, existingCollections, deathInEdgeCollection, artistsCollectionName, locationsCollectionName, graphName);
         addCollectionIfNotExists(arangoDriver, existingCollections, memberOfEdgeCollection, artistsCollectionName, artMovementCollectionName, graphName);
         addCollectionIfNotExists(arangoDriver, existingCollections, describedByEdgeCollection, artistsCollectionName, artFieldCollectionName, graphName);
+        addCollectionIfNotExists(arangoDriver, existingCollections, createdByEdgeCollection, artworkCollectionName, artistsCollectionName, graphName);
     }
 
     private static void addCollectionIfNotExists(ArangoDriver arangoDriver, List<String> existingCollections, String bornInEdgeCollection, String artistsCollectionName, String locationsCollectionName, String graphName) throws ArangoException {

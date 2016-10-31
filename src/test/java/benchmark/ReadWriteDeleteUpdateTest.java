@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public class ReadWriteDeleteUpdateTest {
     public static final String NOT_IMPLEMENTED = "NOT IMPLEMENTED | ";
-    private static boolean isRebuildMode = false;
+    private static boolean isRebuildMode = true;
     private static long _timer = 0;
 
     public static void main(String[] args) throws IOException, ArangoException {

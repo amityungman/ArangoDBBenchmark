@@ -1,0 +1,66 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="firstProject:war exploded">
+    <output-path>$PROJECT_DIR$/target/firstProject</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="firstProject" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.apache.tapestry:tapestry-core:5.4.1" />
+          <element id="library" level="project" name="Maven: org.apache.tapestry:beanmodel:5.4.1" />
+          <element id="library" level="project" name="Maven: org.apache.tapestry:commons:5.4.1" />
+          <element id="library" level="project" name="Maven: org.apache.tapestry:tapestry5-annotations:5.4.1" />
+          <element id="library" level="project" name="Maven: org.apache.tapestry:plastic:5.4.1" />
+          <element id="library" level="project" name="Maven: org.antlr:antlr-runtime:3.5.2" />
+          <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.10" />
+          <element id="library" level="project" name="Maven: org.apache.tapestry:tapestry-json:5.4.1" />
+          <element id="library" level="project" name="Maven: org.apache.tapestry:tapestry-ioc:5.4.1" />
+          <element id="library" level="project" name="Maven: org.apache.tapestry:tapestry-func:5.4.1" />
+          <element id="library" level="project" name="Maven: javax.inject:javax.inject:1" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.7.19" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.19" />
+          <element id="library" level="project" name="Maven: log4j:log4j:1.2.17" />
+          <element id="library" level="project" name="Maven: org.apache.tapestry:tapestry-webresources:5.4.1" />
+          <element id="library" level="project" name="Maven: org.mozilla:rhino:1.7.7.1" />
+          <element id="library" level="project" name="Maven: com.github.sommeri:less4j:1.12.0" />
+          <element id="library" level="project" name="Maven: commons-io:commons-io:2.3" />
+          <element id="library" level="project" name="Maven: commons-beanutils:commons-beanutils:1.8.3" />
+          <element id="library" level="project" name="Maven: org.json:json:20090211" />
+          <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:2.5.0" />
+          <element id="library" level="project" name="Maven: com.google.javascript:closure-compiler:v20131014" />
+          <element id="library" level="project" name="Maven: args4j:args4j:2.0.16" />
+          <element id="library" level="project" name="Maven: com.google.guava:guava:15.0" />
+          <element id="library" level="project" name="Maven: com.google.code.findbugs:jsr305:1.3.9" />
+          <element id="library" level="project" name="Maven: com.arangodb:arangodb-java-driver:3.1.0" />
+          <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.5" />
+          <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpclient:4.5.1" />
+          <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpcore:4.4.3" />
+          <element id="library" level="project" name="Maven: commons-logging:commons-logging:1.2" />
+          <element id="library" level="project" name="Maven: commons-cli:commons-cli:1.2" />
+          <element id="library" level="project" name="Maven: org.apache.jena:jena-arq:3.1.0" />
+          <element id="library" level="project" name="Maven: org.apache.jena:jena-core:3.1.0" />
+          <element id="library" level="project" name="Maven: org.apache.jena:jena-iri:3.1.0" />
+          <element id="library" level="project" name="Maven: xerces:xercesImpl:2.11.0" />
+          <element id="library" level="project" name="Maven: xml-apis:xml-apis:1.4.01" />
+          <element id="library" level="project" name="Maven: org.apache.jena:jena-base:3.1.0" />
+          <element id="library" level="project" name="Maven: com.github.andrewoma.dexx:collection:0.6" />
+          <element id="library" level="project" name="Maven: org.apache.jena:jena-shaded-guava:3.1.0" />
+          <element id="library" level="project" name="Maven: com.github.jsonld-java:jsonld-java:0.7.0" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.3.3" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.3.3" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.3.0" />
+          <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpclient-cache:4.2.6" />
+          <element id="library" level="project" name="Maven: org.apache.thrift:libthrift:0.9.2" />
+          <element id="library" level="project" name="Maven: org.slf4j:jcl-over-slf4j:1.7.20" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-csv:1.0" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-lang3:3.3.2" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/target/firstProject/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="firstProject/web/Web" />
+    </root>
+  </artifact>
+</component>

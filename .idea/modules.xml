@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ArangoDBFirstImpressionMaven.iml" filepath="$PROJECT_DIR$/ArangoDBFirstImpressionMaven.iml" />
+      <module fileurl="file://$PROJECT_DIR$/firstProject.iml" filepath="$PROJECT_DIR$/firstProject.iml" />
     </modules>
   </component>
 </project>

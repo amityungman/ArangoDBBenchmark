@@ -23,10 +23,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="ArangoDBFirstImpressionMaven" />
+        <module name="firstProject" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ArangoDBFirstImpressionMaven" target="1.6" />
+      <module name="firstProject" target="1.6" />
     </bytecodeTargetLevel>
   </component>
 </project>

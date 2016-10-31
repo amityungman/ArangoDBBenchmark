@@ -1,6 +1,7 @@
 package sparql;
 
 import javafx.util.Pair;
+import sparql.dbpediaObjects.ARTWORK_TYPE;
 import sparql.dbpediaObjects.DBPediaArtist;
 import sparql.dbpediaObjects.DBPediaArtwork;
 import sparql.dbpediaObjects.DBPediaPerson;
@@ -44,7 +45,7 @@ public class DBPediaSparqlQuerier {
                         "      }\n" +
                         "}\n" +
                         "GROUP BY ?id ?name ?description ?birthDate ?deathDate\n" +
-                        "HAVING ((COUNT(DISTINCT ?links) >= 1) && (COUNT(DISTINCT ?art) >= 1))\n" +
+                        "HAVING (COUNT(DISTINCT ?art) >= 1)\n" +
                         "ORDER BY DESC(?totalArt)\n" +
                         "LIMIT " + maxAmount;
 
@@ -128,9 +129,19 @@ public class DBPediaSparqlQuerier {
         query = query.replace(":id:",wikiPageID);
 
         for(Map<String,String> result : SparqlExecuter.runSparql(query,SparqlSources.DBPEDIA))
-            artwork.add(new DBPediaArtwork(result.get("id"), result.get("art"), result.get("description"), getCreationYearFromSubjects(result.get("subject").split(";"))));
+            artwork.add(new DBPediaArtwork(result.get("id"), result.get("art"), result.get("description"), getCreationYearFromSubjects(result.get("subject").split(";")), getArtworkTypeFromSubjects(result.get("subject").split(";"))));
 
         return artwork;
+    }
+
+    private static ARTWORK_TYPE getArtworkTypeFromSubjects(String[] subjects) {
+        for(String subject : subjects) {
+            ARTWORK_TYPE artworkType = ARTWORK_TYPE.parse(subject.replaceAll("\\d+",""));
+            if(artworkType.equals(ARTWORK_TYPE.OTHER))
+                continue;;
+            return artworkType;
+        }
+        return ARTWORK_TYPE.OTHER;
     }
 
     /***

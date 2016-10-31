@@ -18,8 +18,8 @@ public class DBPediaArtwork {
         ArtworkType = artworkType;
     }
 
-    public DBPediaArtwork(String wikiPageID, String name, String description, String creationYear) {
-        this(wikiPageID, name, description, creationYear, ARTWORK_TYPE.OTHER);
+    public DBPediaArtwork(String wikiPageID, String name, String description, String creationYear, String artworkName) {
+        this(wikiPageID, name, description, creationYear, ARTWORK_TYPE.parse(artworkName));
     }
 
     public String getWikiPageID() {

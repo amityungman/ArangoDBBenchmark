@@ -38,4 +38,11 @@ public enum ARTWORK_TYPE {
     public ART_FIELD getTypeField() {
         return TypeField;
     }
+
+    public static ARTWORK_TYPE parse(String artworkName) {
+        for(ARTWORK_TYPE artworkType : ARTWORK_TYPE.values())
+            if(artworkName.toUpperCase().equals(artworkType.getName()))
+                return artworkType;
+        return OTHER;
+    }
 }

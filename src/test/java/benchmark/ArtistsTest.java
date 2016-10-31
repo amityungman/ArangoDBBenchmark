@@ -155,7 +155,7 @@ public class ArtistsTest {
     }
 
     private static String cleanText(String key) {
-        String cleanKey = Normalizer.normalize(key.replace(" ", "_"), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+        String cleanKey = Normalizer.normalize(key.replace(" ", "_").replace("&","and"), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "").toUpperCase();
         return cleanKey;
     }
 

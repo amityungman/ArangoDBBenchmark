@@ -23,7 +23,7 @@ import java.util.*;
  */
 public class ArtistsTest {
     private static final boolean RESET_MODE = true;
-    private static boolean BUILD_MODE = false;
+    private static boolean BUILD_MODE = true;
 
     public static final String dbName = "artDb";
     public static final String graphName = "Art";
@@ -75,7 +75,10 @@ public class ArtistsTest {
             setUpArtistEdgesAndVertices(arangoDriver, graph);
 
             Long runStartTime = System.currentTimeMillis();
-            List<DBPediaArtist> artists = DBPediaSparqlQuerier.getMostFamousArtists(10000);
+            System.out.println("Getting artists from DBPedia");
+            List<DBPediaArtist> artists = DBPediaSparqlQuerier.getMostFamousArtists(1000);
+            System.out.println("Got " + artists.size() + " artists");
+
 
             runStartTime = System.currentTimeMillis();
 
@@ -124,13 +127,9 @@ public class ArtistsTest {
                     edgesCounter++;
                 }
 
-                String query = "FOR t IN Artists RETURN t";
-                Map<String, Object> bindVars = new MapBuilder().get();
-                DocumentCursor cursor = arangoDriver.executeDocumentQuery(query, bindVars, null,
-                        BaseDocument.class);
+                System.out.format("Added " + artistsCounter + "/" + artists.size() + " artists and " +
+                        edgesCounter + " edges in %.4f seconds\n", (System.currentTimeMillis() - runStartTime) / 1000.0);
             }
-            System.out.format("Added " + artistsCounter + " artists and " +
-                    edgesCounter + " edges in %.4f seconds\n", (System.currentTimeMillis() - runStartTime) / 1000.0);
         }
 
         return arangoDriver;
@@ -155,7 +154,15 @@ public class ArtistsTest {
     }
 
     private static String cleanText(String key) {
-        String cleanKey = Normalizer.normalize(key.replace(" ", "_").replace("&","and"), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "").toUpperCase();
+        String cleanKey = key.replace(" ", "_");
+        cleanKey = cleanKey.replace("&","and");
+        cleanKey = cleanKey.replace("~","_");
+        cleanKey = cleanKey.replace("+","_");
+        cleanKey = cleanKey.replace("-","_");
+        cleanKey = cleanKey.replace("*","_");
+        cleanKey = cleanKey.replace("^","_");
+
+        cleanKey = Normalizer.normalize(cleanKey, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "").toUpperCase();
         return cleanKey;
     }
 

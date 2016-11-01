@@ -2,133 +2,189 @@ package benchmark;
 
 import com.arangodb.ArangoDriver;
 import com.arangodb.ArangoException;
+import com.arangodb.DocumentCursor;
+import com.arangodb.entity.BaseDocument;
+import com.arangodb.util.MapBuilder;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by Amit on 31/10/2016.
  */
 public class ReadWriteDeleteUpdateTest {
-    public static final String NOT_IMPLEMENTED = "NOT IMPLEMENTED | ";
+    public static final String NOT_IMPLEMENTED = "\u001B[31m"  + "NOT IMPLEMENTED | " + "\u001B[0m" ;
     private static boolean isRebuildMode = false;
     private static long _timer = 0;
+
+    private static ArangoDriver _arangoDriver;
 
     public static void main(String[] args) throws IOException, ArangoException {
         double passedSeconds = getPassedSeconds();
         //1.1
-        ArangoDriver arangoDriver = ArtistsTest.setUpDBPediaArtistsDB(isRebuildMode,true);
+        _arangoDriver = ArtistsTest.setUpDBPediaArtistsDB(isRebuildMode,true);
         if(isRebuildMode)
-            System.out.format("1.1 - Created artists graph [%.4f seconds].\n", getPassedSeconds());
+            System.out.format("\u001B[33m1.1\u001B[0m - Created artists graph [%.4f seconds].\n", getPassedSeconds());
         getPassedSeconds();
 
+        //RESET data
+        if(!isRebuildMode)
+            resetDoneActions();
+
         //1.2
-        updateAnArtworkName("The Starry Night", "Starry Night");
-        System.out.format("1.2 - Updated single artwork name [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = updateAnArtworkName("The Starry Night", "Starry Night");
+        System.out.format("\u001B[33m1.2\u001B[0m - Updated single artwork name [%.4f seconds].\n", passedSeconds);
 
         //1.3
-        createAndConnectTakingPhotos();
-        System.out.format("1.3 - Created \"Taking Photos\" art movement node, and connect all photography related to it [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = createAndConnectTakingPhotos();
+        System.out.format("\u001B[33m1.3\u001B[0m - Created \"Taking Photos\" art movement node, and connect all photography related to it [%.4f seconds].\n", passedSeconds);
 
         //1.4
-        deletePhotographyMovement();
-        System.out.format("1.4 - Deleted \"Photography\" and all relations [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = deletePhotographyMovement();
+        System.out.format("\u001B[33m1.4\u001B[0m - Deleted \"Photography\" and all relations [%.4f seconds].\n", passedSeconds);
 
         //1.5
-        updateEdgesWeight(ArtistsTest.bornInEdgeCollection, 1.0);
-        System.out.format("1.5 - Update BORN_IN edges to have weight=1 [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = updateEdgesWeight(ArtistsTest.bornInEdgeCollection, 1.0);
+        System.out.format("\u001B[33m1.5\u001B[0m - Update BORN_IN edges to have weight=1 [%.4f seconds].\n", passedSeconds);
 
         //1.6
-        deleteAllParisianPainters();
-        System.out.format("1.6 - Deleted all painters born in Paris [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = deleteAllParisianPainters();
+        System.out.format("\u001B[33m1.6\u001B[0m - Deleted all painters born in Paris [%.4f seconds].\n", passedSeconds);
 
         //1.7
-        updateEdgesWeight(ArtistsTest.deathInEdgeCollection, 0.5);
-        System.out.format("1.7 - Update all DIED_IN edges to have weight=0.5 [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = updateEdgesWeight(ArtistsTest.deathInEdgeCollection, 0.5);
+        System.out.format("\u001B[33m1.7\u001B[0m - Update all DIED_IN edges to have weight=0.5 [%.4f seconds].\n", passedSeconds);
 
 
         //3.1
-        searchForName("Vincent van Gogh", false);
-        System.out.format("3.1 - Search for Vincent van Gogh [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = searchForName("Vincent van Gogh", false);
+        System.out.format("\u001B[33m3.1\u001B[0m - Search for Vincent van Gogh [%.4f seconds].\n", passedSeconds);
 
         //3.2
-        searchForName("Van Gogh", true);
-        System.out.format("3.2 - Fuzzy search for Van Gogh [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = searchForName("Van Gogh", true);
+        System.out.format("\u001B[33m3.2\u001B[0m - Fuzzy search for Van Gogh [%.4f seconds].\n", passedSeconds);
 
         //3.3
-        searchForDiedAfterDate("1950-1-1");
-        System.out.format("3.3 - Search for people who died after 1950 [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = searchForDiedAfterDate("1950-1-1");
+        System.out.format("\u001B[33m3.3\u001B[0m - Search for people who died after 1950 [%.4f seconds].\n", passedSeconds);
 
         //3.4
-        searchInDescription("son");
-        System.out.format("3.4 - Search for people who have \"son\" in their description [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = searchInDescription("son");
+        System.out.format("\u001B[33m3.4\u001B[0m - Search for people who have \"son\" in their description [%.4f seconds].\n", passedSeconds);
 
 
         //4.1
-        findShortestPath("Picasso", "France");
-        System.out.format("4.1 - Find shortest path between Picasso and France [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = findShortestPath("Picasso", "France");
+        System.out.format("\u001B[33m4.1\u001B[0m - Find shortest path between Picasso and France [%.4f seconds].\n", getPassedSeconds());
 
         //4.2
-        findShortestPathNotUsingArtMovement("Picasso", "France");
-        System.out.format("4.2 - Find if there are paths from Picasso to France, without going through an Art movement node [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = findShortestPathNotUsingArtMovement("Picasso", "France");
+        System.out.format("\u001B[33m4.2\u001B[0m - Find if there are paths from Picasso to France, without going through an Art movement node [%.4f seconds].\n", getPassedSeconds());
 
         //4.3
-        findLightestPath("Picasso", "France");
-        System.out.format("4.3 - Find lightest path from Picasso to France [%.4f seconds].\n", getPassedSeconds());
+        passedSeconds = findLightestPath("Picasso", "France");
+        System.out.format("\u001B[33m4.3\u001B[0m - Find lightest path from Picasso to France [%.4f seconds].\n", getPassedSeconds());
     }
 
-    private static void updateAnArtworkName(String originalName, String newName) {
-        //TODO implement
-        System.out.print(NOT_IMPLEMENTED);
+    private static void resetDoneActions() throws ArangoException {
+        String query = "FOR t IN Artworks FILTER LOWER(t.Name) ==  @artworkName UPDATE {  _key: t._key, Name: @newName } IN Artworks";
+        Map<String, Object> bindVars = new MapBuilder().put("artworkName", "starry night").put("newName", "The Starry Night").get();
+        _arangoDriver.executeDocumentQuery(query, bindVars, null,
+                BaseDocument.class);
     }
 
-    private static void createAndConnectTakingPhotos() {
-        //TODO implement
-        System.out.print(NOT_IMPLEMENTED);
+    private static double updateAnArtworkName(String originalName, String newName) throws ArangoException {
+        double secondsPassed;
+
+        //String query = "FOR t IN Artists FILTER t.Name == @artistName UPDATE t.Name: @newName";
+        String query = "FOR t IN Artworks FILTER LOWER(t.Name) ==  @artworkName RETURN t";
+        Map<String, Object> bindVars = new MapBuilder().put("artworkName", originalName.toLowerCase()).get();
+        DocumentCursor cursor = _arangoDriver.executeDocumentQuery(query, bindVars, null,
+                BaseDocument.class);
+        Iterator entityIterator = cursor.entityIterator();
+        while(entityIterator.hasNext()) {
+            BaseDocument entity = (BaseDocument) entityIterator.next();
+            System.out.println("Found name in document key: " + entity.getDocumentKey());
+        }
+
+        getPassedSeconds();
+        query = "FOR t IN Artworks FILTER LOWER(t.Name) ==  @artworkName UPDATE {  _key: t._key, Name: @newName } IN Artworks";
+        bindVars = new MapBuilder().put("artworkName", originalName.toLowerCase()).put("newName", newName).get();
+        cursor = _arangoDriver.executeDocumentQuery(query, bindVars, null,
+                BaseDocument.class);
+        secondsPassed = getPassedSeconds();
+
+        query = "FOR t IN Artworks FILTER LOWER(t.Name) ==  @artworkName RETURN t";
+        bindVars = new MapBuilder().put("artworkName", newName.toLowerCase()).get();
+        cursor = _arangoDriver.executeDocumentQuery(query, bindVars, null,
+                BaseDocument.class);
+        entityIterator = cursor.entityIterator();
+        while(entityIterator.hasNext()) {
+            BaseDocument entity = (BaseDocument) entityIterator.next();
+            System.out.println("Updated successfully document key: " + entity.getDocumentKey());
+        }
+        return secondsPassed;
     }
 
-    private static void deletePhotographyMovement() {
+    private static double createAndConnectTakingPhotos() {
         //TODO implement
         System.out.print(NOT_IMPLEMENTED);
+        return getPassedSeconds();
     }
 
-    private static void updateEdgesWeight(String edgeTypeName, double weight) {
+    private static double deletePhotographyMovement() {
         //TODO implement
         System.out.print(NOT_IMPLEMENTED);
+        return getPassedSeconds();
     }
 
-    private static void deleteAllParisianPainters() {
+    private static double updateEdgesWeight(String edgeTypeName, double weight) {
         //TODO implement
         System.out.print(NOT_IMPLEMENTED);
+        return getPassedSeconds();
     }
 
-    private static void searchForName(String name, boolean isFuzzySearch) {
+    private static double deleteAllParisianPainters() {
         //TODO implement
         System.out.print(NOT_IMPLEMENTED);
+        return getPassedSeconds();
     }
 
-    private static void searchForDiedAfterDate(String deathDate) {
+    private static double searchForName(String name, boolean isFuzzySearch) {
         //TODO implement
         System.out.print(NOT_IMPLEMENTED);
+        return getPassedSeconds();
     }
 
-    private static void searchInDescription(String searchWord) {
+    private static double searchForDiedAfterDate(String deathDate) {
         //TODO implement
         System.out.print(NOT_IMPLEMENTED);
+        return getPassedSeconds();
     }
 
-    private static void findShortestPath(String firstNode, String secondNode) {
+    private static double searchInDescription(String searchWord) {
         //TODO implement
         System.out.print(NOT_IMPLEMENTED);
+        return getPassedSeconds();
     }
 
-    private static void findShortestPathNotUsingArtMovement(String firstNode, String secondNode) {
+    private static double findShortestPath(String firstNode, String secondNode) {
         //TODO implement
         System.out.print(NOT_IMPLEMENTED);
+        return getPassedSeconds();
     }
 
-    private static void findLightestPath(String firstNode, String secondNode) {
+    private static double findShortestPathNotUsingArtMovement(String firstNode, String secondNode) {
         //TODO implement
         System.out.print(NOT_IMPLEMENTED);
+        return getPassedSeconds();
+    }
+
+    private static double findLightestPath(String firstNode, String secondNode) {
+        //TODO implement
+        System.out.print(NOT_IMPLEMENTED);
+        return getPassedSeconds();
     }
 
 

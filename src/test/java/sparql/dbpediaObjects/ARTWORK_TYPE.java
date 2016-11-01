@@ -15,6 +15,12 @@ public enum ARTWORK_TYPE {
     BOOK("BOOK", "BOOKS", ART_FIELD.WRITING),
     FILM("FILM", "FILMS", ART_FIELD.FILM),
     MOVIE("MOVIE", "MOVIES", ART_FIELD.FILM),
+    MUSIC("MUSIC","MUSIC",ART_FIELD.MUSIC),
+    ALBUM("ALBUM","ALBUMS",ART_FIELD.MUSIC),
+    EP("EP","EPS",ART_FIELD.MUSIC),
+    LP("LP","LPS",ART_FIELD.MUSIC),
+    COMPOSITION("COMPOSITION","COMPOSITIONS",ART_FIELD.COMPOSITION),
+    SONG("SONG","SONGS",ART_FIELD.MUSIC),
     OTHER("OTHER", null, null);
 
     private String TypeName;
@@ -40,9 +46,12 @@ public enum ARTWORK_TYPE {
     }
 
     public static ARTWORK_TYPE parse(String artworkName) {
-        for(ARTWORK_TYPE artworkType : ARTWORK_TYPE.values())
-            if(artworkName.toUpperCase().equals(artworkType.getName()))
+        for(ARTWORK_TYPE artworkType : ARTWORK_TYPE.values()) {
+            if (artworkName.toUpperCase().equals(artworkType.getName()))
                 return artworkType;
+            if (artworkName.toUpperCase().equals(artworkType.getTypePlural()))
+                return artworkType;
+        }
         return OTHER;
     }
 }

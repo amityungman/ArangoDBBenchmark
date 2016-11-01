@@ -22,7 +22,7 @@ public class DBPediaSparqlQuerier {
      */
     public static List<DBPediaArtist> getMostFamousArtists(int maxAmount) {
         List<DBPediaArtist> artists = new LinkedList<DBPediaArtist>();
-        String query =
+        /*String query =
                 "SELECT ?id ?name ?description (group_concat(distinct ?aField ; separator = \";\") AS ?field) (group_concat(distinct ?aMovement ; separator = \";\") AS ?movement) ?birthDate ?deathDate (group_concat(distinct ?aBirthPlace ; separator = \";\") AS ?birthPlace)  (group_concat(distinct ?aDeathPlace ; separator = \";\") AS ?deathPlace) (COUNT(DISTINCT ?links) AS ?totalLinks) (COUNT(DISTINCT ?art) AS ?totalArt) WHERE {\n" +
                         "      ?person a dbo:Artist .\n" +
                         "      ?person rdfs:comment ?description .\n" +
@@ -43,6 +43,26 @@ public class DBPediaSparqlQuerier {
                         "      FILTER NOT EXISTS {\n" +
                         "         ?person rdf:type <http://dbpedia.org/ontology/MusicalArtist>\n" +
                         "      }\n" +
+                        "}\n" +
+                        "GROUP BY ?id ?name ?description ?birthDate ?deathDate\n" +
+                        "HAVING (COUNT(DISTINCT ?art) >= 1)\n" +
+                        "ORDER BY DESC(?totalArt)\n" +
+                        "LIMIT " + maxAmount;*/
+        String query =
+                "SELECT ?id ?name ?description (group_concat(distinct ?aField ; separator = \";\") AS ?field) (group_concat(distinct ?aMovement ; separator = \";\") AS ?movement) ?birthDate ?deathDate (group_concat(distinct ?aBirthPlace ; separator = \";\") AS ?birthPlace)  (group_concat(distinct ?aDeathPlace ; separator = \";\") AS ?deathPlace) (COUNT(DISTINCT ?links) AS ?totalLinks) (COUNT(DISTINCT ?art) AS ?totalArt) WHERE {\n" +
+                        "      ?person a dbo:Artist .\n" +
+                        "      ?person rdfs:comment ?description .\n" +
+                        "      ?person dbo:wikiPageID ?id .\n" +
+                        "      OPTIONAL {?person dbo:field ?aField} .\n" +
+                        "      OPTIONAL {?person dbo:movement ?aMovement} .\n" +
+                        "      ?person dbo:birthPlace ?aBirthPlace .\n" +
+                        "      ?person dbo:birthDate ?birthDate .\n" +
+                        "      OPTIONAL {?person dbo:deathPlace ?aDeathPlace} .\n" +
+                        "      OPTIONAL {?person dbo:deathDate ?deathDate} .\n" +
+                        "      ?person foaf:name ?name .\n" +
+                        "      ?person dbo:wikiPageExternalLink ?links.\n" +
+                        "      ?art    dbpedia2:artist ?person .\n" +
+                        "      FILTER (LANG(?description) = 'en') . \n" +
                         "}\n" +
                         "GROUP BY ?id ?name ?description ?birthDate ?deathDate\n" +
                         "HAVING (COUNT(DISTINCT ?art) >= 1)\n" +
@@ -136,10 +156,12 @@ public class DBPediaSparqlQuerier {
 
     private static ARTWORK_TYPE getArtworkTypeFromSubjects(String[] subjects) {
         for(String subject : subjects) {
-            ARTWORK_TYPE artworkType = ARTWORK_TYPE.parse(subject.replaceAll("\\d+",""));
-            if(artworkType.equals(ARTWORK_TYPE.OTHER))
-                continue;;
-            return artworkType;
+            for(String subjectPart : subject.replaceAll("\\d+","").split(" ")) {
+                ARTWORK_TYPE artworkType = ARTWORK_TYPE.parse(subjectPart);
+                if (artworkType.equals(ARTWORK_TYPE.OTHER))
+                    continue;
+                return artworkType;
+            }
         }
         return ARTWORK_TYPE.OTHER;
     }

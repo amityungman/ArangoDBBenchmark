@@ -75,6 +75,8 @@ public class ArtistsTest {
             GraphEntity graph = setUpGraph(arangoDriver);
             setUpArtistEdgesAndVertices(arangoDriver, graph);
 
+            arangoDriver.createFulltextIndex(artistsCollectionName, "Description");
+
             addAllNodes(arangoDriver, new LambdaTest() {
                 @Override
                 public <T> boolean check(T value) {
@@ -106,7 +108,7 @@ public class ArtistsTest {
                 EdgeEntity<String> edgeEntity = arangoDriver.graphCreateEdge(graphName, bornInEdgeCollection, null, artistVertex.getDocumentHandle(), birthPlace.getDocumentHandle());
                 DocumentEntity<BaseDocument> edgeDocument = arangoDriver.getDocument(bornInEdgeCollection, edgeEntity.getDocumentKey(), BaseDocument.class);
                 BaseDocument edge = edgeDocument.getEntity();
-                edge.addAttribute("birth_date", artist.getBirthDate());
+                edge.addAttribute("BirthDate", artist.getBirthDate());
                 arangoDriver.updateDocument(edgeDocument.getDocumentHandle(), edge);
                 edgesCounter++;
             }
@@ -117,7 +119,7 @@ public class ArtistsTest {
                 EdgeEntity<String> edgeEntity = arangoDriver.graphCreateEdge(graphName, deathInEdgeCollection, null, artistVertex.getDocumentHandle(), deathPlace.getDocumentHandle());
                 DocumentEntity<BaseDocument> edgeDocument = arangoDriver.getDocument(deathInEdgeCollection, edgeEntity.getDocumentKey(), BaseDocument.class);
                 BaseDocument edge = edgeDocument.getEntity();
-                edge.addAttribute("death_date", artist.getDeathDate());
+                edge.addAttribute("DeathDate", artist.getDeathDate());
                 arangoDriver.updateDocument(edgeDocument.getDocumentHandle(), edge);
                 edgesCounter++;
             }
@@ -135,10 +137,14 @@ public class ArtistsTest {
                 arangoDriver.graphCreateEdge(graphName, describedByEdgeCollection, null, artistVertex.getDocumentHandle(), artField.getDocumentHandle());
                 edgesCounter++;
             }
-            for(DBPediaArtwork artwork : DBPediaSparqlQuerier.getAtristArtwork(artist.getWikiPageID())) {
-                DocumentEntity<DBPediaArtwork> artworkEntity = getOrCreateVertex(arangoDriver, graphName, artworkCollectionName, artwork.getName(), artwork, DBPediaArtwork.class);
-                arangoDriver.graphCreateEdge(graphName, createdByEdgeCollection, null, artworkEntity.getDocumentHandle(), artistVertex.getDocumentHandle());
-                edgesCounter++;
+            try {
+                for (DBPediaArtwork artwork : DBPediaSparqlQuerier.getAtristArtwork(artist.getWikiPageID())) {
+                    DocumentEntity<DBPediaArtwork> artworkEntity = getOrCreateVertex(arangoDriver, graphName, artworkCollectionName, artwork.getName(), artwork, DBPediaArtwork.class);
+                    arangoDriver.graphCreateEdge(graphName, createdByEdgeCollection, null, artworkEntity.getDocumentHandle(), artistVertex.getDocumentHandle());
+                    edgesCounter++;
+                }
+            } catch (Exception e) {
+                System.out.println("\u001B[31mCould not get artwork for " + artist.getName() + "\u001B[0m");
             }
 
             System.out.format("Added " + artistsCounter + "/" + artists.size() + " artists and " +

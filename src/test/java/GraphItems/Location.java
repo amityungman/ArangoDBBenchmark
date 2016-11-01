@@ -5,9 +5,9 @@ package GraphItems;
  */
 
 public class Location {
-    public String name;
+    public String Name;
     public Location(String name) {
-        this.name = name;
+        Name = name;
     }
     // getter and setter
 }

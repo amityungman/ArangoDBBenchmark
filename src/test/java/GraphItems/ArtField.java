@@ -5,9 +5,9 @@ package GraphItems;
  */
 
 public class ArtField {
-    public String name;
+    public String Name;
     public ArtField(String name) {
-        this.name = name;
+        Name = name;
     }
     // getter and setter
 }

@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class ArtistsTest {
     private static final boolean RESET_MODE = true;
-    public static final int MAX_ARTISTS_AMOUNT = 1500;
+    public static final int MAX_ARTISTS_AMOUNT = 5000;
     private static boolean BUILD_MODE = true;
 
     public static final String dbName = "artDb";

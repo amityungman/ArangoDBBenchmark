@@ -136,6 +136,17 @@ public class ReadWriteDeleteUpdateTest {
                 "REMOVE { _key: v._key } IN ArtFields";
         _arangoDriver.executeDocumentQuery(query, bindVars, null,
                 BaseDocument.class);
+
+        ArtistsTest.addAllNodes(_arangoDriver, new LambdaTest() {
+            @Override
+            public <T> boolean check(T value) {
+                DBPediaArtist artist = (DBPediaArtist) value;
+                for(String location : artist.getBirthPlace())
+                    if(location.toLowerCase().equals("paris"))
+                        return true;
+                return false;
+            }
+        });
     }
 
     private static double updateAnArtworkName(String originalName, String newName) throws ArangoException {
@@ -168,17 +179,6 @@ public class ReadWriteDeleteUpdateTest {
             BaseDocument entity = (BaseDocument) entityIterator.next();
             System.out.println("Updated successfully document key: " + entity.getDocumentKey());
         }
-
-        ArtistsTest.addAllNodes(_arangoDriver, new LambdaTest() {
-            @Override
-            public <T> boolean check(T value) {
-                DBPediaArtist artist = (DBPediaArtist) value;
-                for(String location : artist.getBirthPlace())
-                    if(location.toLowerCase().equals("paris"))
-                        return true;
-                return false;
-            }
-        });
 
         return secondsPassed;
     }

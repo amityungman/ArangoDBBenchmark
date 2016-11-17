@@ -24,7 +24,7 @@ import static benchmark.ArtistsTest.*;
  */
 public class ReadWriteDeleteUpdateTest {
     public static final String NOT_IMPLEMENTED = "\u001B[31mNOT IMPLEMENTED | \u001B[0m" ;
-    private static boolean isRebuildMode = false;
+    private static boolean isRebuildMode = true;
     private static long _timer = 0;
 
     private static ArangoDriver _arangoDriver;

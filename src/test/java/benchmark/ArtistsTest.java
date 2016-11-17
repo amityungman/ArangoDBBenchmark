@@ -89,11 +89,14 @@ public class ArtistsTest {
     }
 
     public static void addAllNodes(ArangoDriver arangoDriver, LambdaTest testAction) throws ArangoException {
+        Long DBPediaTime = 0l, DBPediaTempTime = 0l;
         Long runStartTime = System.currentTimeMillis();
         int artistsCounter = 0, edgesCounter = 0;
 
         System.out.println("Getting artists from DBPedia");
+        DBPediaTime = System.currentTimeMillis();
         List<DBPediaArtist> artists = DBPediaSparqlQuerier.getMostFamousArtists(MAX_ARTISTS_AMOUNT);
+        DBPediaTime = System.currentTimeMillis() - DBPediaTime;
         System.out.println("Got " + artists.size() + " artists");
 
         for (DBPediaArtist artist : artists) {
@@ -138,7 +141,10 @@ public class ArtistsTest {
                 edgesCounter++;
             }
             try {
-                for (DBPediaArtwork artwork : DBPediaSparqlQuerier.getAtristArtwork(artist.getWikiPageID())) {
+                DBPediaTempTime = System.currentTimeMillis();
+                List<DBPediaArtwork> artworks = DBPediaSparqlQuerier.getAtristArtwork(artist.getWikiPageID());
+                DBPediaTime += System.currentTimeMillis() - DBPediaTempTime;
+                for (DBPediaArtwork artwork : artworks) {
                     DocumentEntity<DBPediaArtwork> artworkEntity = getOrCreateVertex(arangoDriver, graphName, artworkCollectionName, artwork.getName(), artwork, DBPediaArtwork.class);
                     arangoDriver.graphCreateEdge(graphName, createdByEdgeCollection, null, artworkEntity.getDocumentHandle(), artistVertex.getDocumentHandle());
                     edgesCounter++;
@@ -150,6 +156,8 @@ public class ArtistsTest {
             System.out.format("Added " + artistsCounter + "/" + artists.size() + " artists and " +
                     edgesCounter + " edges in %.4f seconds\n", (System.currentTimeMillis() - runStartTime) / 1000.0);
         }
+
+        System.out.format("Total DBPedia time was \u001B[32m[%.4f seconds]\u001B[0m\n", DBPediaTime/ 1000.0);
     }
 
     public static <T> DocumentEntity<T> getOrCreateVertex(ArangoDriver arangoDriver, String graphName, String collectionName, String key, T verticeObject, Class objectType) throws ArangoException {

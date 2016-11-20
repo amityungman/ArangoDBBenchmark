@@ -28,6 +28,15 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/Code/Jars/mysql-connector-java-5.1.9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: org.apache.tapestry:tapestry-core:5.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tapestry:beanmodel:5.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tapestry:commons:5.4.1" level="project" />
@@ -148,5 +157,6 @@
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.20" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-csv:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.3.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: mysql:mysql-connector-java:5.1.37" level="project" />
   </component>
 </module>

@@ -1,8 +1,12 @@
 package DL;
 
+import utils.CollectionUtils;
+
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Created by Amit on 20/11/2016.
@@ -38,7 +42,15 @@ public class TheCultureTripKGData {
                     String cleanPropertyString = propertyString;
                     if(cleanPropertyString.substring(0,1).equals(","))
                         cleanPropertyString = cleanPropertyString.substring(1);
-                    nodeProperties.add(new NodeProperty(cleanPropertyString));
+                    NodeProperty newProperty = new NodeProperty(cleanPropertyString);
+                    for(NodeProperty nodeProperty : nodeProperties) {
+                        if(!nodeProperty.NodeProperty.equals(newProperty.NodeProperty))
+                            continue;
+                        if(newProperty.UpdateDate.compareTo(nodeProperty.UpdateDate) > 0) {
+                            nodeProperties.remove(nodeProperty);
+                        }
+                    }
+                    nodeProperties.add(newProperty);
                 }
 
                 nodes.add(new Node(nodeID, nodeType, nodeProperties, creationDate, updateDate));

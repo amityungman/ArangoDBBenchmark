@@ -1,15 +1,14 @@
 package benchmark;
 
-import GraphItems.ArtField;
+import graphItems.ArtField;
 import com.arangodb.ArangoDriver;
 import com.arangodb.ArangoException;
 import com.arangodb.DocumentCursor;
 import com.arangodb.entity.BaseDocument;
-import com.arangodb.entity.BaseEntity;
-import com.arangodb.entity.CollectionsEntity;
 import com.arangodb.entity.DocumentEntity;
 import com.arangodb.util.MapBuilder;
 import sparql.dbpediaObjects.DBPediaArtist;
+import utils.LambdaTest;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package benchmark;
+package utils;
 
 import org.apache.jena.atlas.iterator.Action;
 import sparql.dbpediaObjects.DBPediaArtist;

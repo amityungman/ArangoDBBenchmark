@@ -1,12 +1,9 @@
 import com.arangodb.*;
 import com.arangodb.entity.*;
-import GraphItems.*;
-import com.arangodb.entity.marker.VertexEntity;
+import graphItems.*;
 import com.arangodb.util.AqlQueryOptions;
 import com.arangodb.util.MapBuilder;
-import com.steadystate.css.sac.DocumentHandlerExt;
 
-import javax.swing.plaf.basic.BasicEditorPaneUI;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

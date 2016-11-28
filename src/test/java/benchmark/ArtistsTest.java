@@ -1,22 +1,18 @@
 package benchmark;
 
-import GraphItems.ArtField;
-import GraphItems.ArtMovement;
-import GraphItems.Location;
-import GraphItems.Person;
+import DL.ArangoDAL;
+import graphItems.ArtField;
+import graphItems.ArtMovement;
+import graphItems.Location;
 import com.arangodb.*;
 import com.arangodb.entity.*;
 import com.arangodb.util.MapBuilder;
-import com.github.sommeri.less4j.core.compiler.expressions.strings.StringFormatter;
-import org.apache.jena.atlas.iterator.Action;
 import sparql.DBPediaSparqlQuerier;
 import sparql.dbpediaObjects.DBPediaArtist;
 import sparql.dbpediaObjects.DBPediaArtwork;
+import utils.LambdaTest;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.text.Normalizer;
 import java.util.*;
 
 /**
@@ -66,13 +62,13 @@ public class ArtistsTest {
 
     public static ArangoDriver setUpDBPediaArtistsDB(boolean isBuildMode, boolean isResetMode) throws ArangoException, IOException {
         //Set up adapter
-        ArangoDriver arangoDriver = getArangoDriver();
-        setUpDB(arangoDriver);
+        ArangoDriver arangoDriver = ArangoDAL.getArangoDriver();
+        ArangoDAL.setUpDB(arangoDriver, dbName);
 
         if(isBuildMode) {
             if (isResetMode)
                 arangoDriver.deleteGraph(graphName, true);
-            GraphEntity graph = setUpGraph(arangoDriver);
+            GraphEntity graph = ArangoDAL.setUpGraph(arangoDriver, graphName);
             setUpArtistEdgesAndVertices(arangoDriver, graph);
 
             arangoDriver.createFulltextIndex(artistsCollectionName, "Description");
@@ -103,11 +99,11 @@ public class ArtistsTest {
             artistsCounter++;
             if(!testAction.check(artist))
                 continue;
-            DocumentEntity<DBPediaArtist> artistVertex = getOrCreateVertex(arangoDriver, graphName, artistsCollectionName, artist.getWikiPageID(), artist, DBPediaArtist.class);
+            DocumentEntity<DBPediaArtist> artistVertex = ArangoDAL.getOrCreateVertex(arangoDriver, graphName, artistsCollectionName, artist.getWikiPageID(), artist, DBPediaArtist.class);
             for (String place : artist.getBirthPlace()) {
                 if (place.equals(""))
                     continue;
-                DocumentEntity<Location> birthPlace = getOrCreateVertex(arangoDriver, graphName, locationsCollectionName, place, new Location(place), Location.class);
+                DocumentEntity<Location> birthPlace = ArangoDAL.getOrCreateVertex(arangoDriver, graphName, locationsCollectionName, place, new Location(place), Location.class);
                 EdgeEntity<String> edgeEntity = arangoDriver.graphCreateEdge(graphName, bornInEdgeCollection, null, artistVertex.getDocumentHandle(), birthPlace.getDocumentHandle());
                 DocumentEntity<BaseDocument> edgeDocument = arangoDriver.getDocument(bornInEdgeCollection, edgeEntity.getDocumentKey(), BaseDocument.class);
                 BaseDocument edge = edgeDocument.getEntity();
@@ -118,7 +114,7 @@ public class ArtistsTest {
             for (String place : artist.getDeathPlace()) {
                 if (place.equals(""))
                     continue;
-                DocumentEntity<Location> deathPlace = getOrCreateVertex(arangoDriver, graphName, locationsCollectionName, place, new Location(place), Location.class);
+                DocumentEntity<Location> deathPlace = ArangoDAL.getOrCreateVertex(arangoDriver, graphName, locationsCollectionName, place, new Location(place), Location.class);
                 EdgeEntity<String> edgeEntity = arangoDriver.graphCreateEdge(graphName, deathInEdgeCollection, null, artistVertex.getDocumentHandle(), deathPlace.getDocumentHandle());
                 DocumentEntity<BaseDocument> edgeDocument = arangoDriver.getDocument(deathInEdgeCollection, edgeEntity.getDocumentKey(), BaseDocument.class);
                 BaseDocument edge = edgeDocument.getEntity();
@@ -129,14 +125,14 @@ public class ArtistsTest {
             for (String movement : artist.getArtMovements()) {
                 if (movement.equals(""))
                     continue;
-                DocumentEntity<ArtMovement> artMovement = getOrCreateVertex(arangoDriver, graphName, artMovementCollectionName, movement, new ArtMovement(movement), ArtMovement.class);
+                DocumentEntity<ArtMovement> artMovement = ArangoDAL.getOrCreateVertex(arangoDriver, graphName, artMovementCollectionName, movement, new ArtMovement(movement), ArtMovement.class);
                 arangoDriver.graphCreateEdge(graphName, memberOfEdgeCollection, null, artistVertex.getDocumentHandle(), artMovement.getDocumentHandle());
                 edgesCounter++;
             }
             for (String field : artist.getArtFields()) {
                 if (field.equals(""))
                     continue;
-                DocumentEntity<ArtField> artField = getOrCreateVertex(arangoDriver, graphName, artFieldCollectionName, field, new ArtField(field), ArtField.class);
+                DocumentEntity<ArtField> artField = ArangoDAL.getOrCreateVertex(arangoDriver, graphName, artFieldCollectionName, field, new ArtField(field), ArtField.class);
                 arangoDriver.graphCreateEdge(graphName, describedByEdgeCollection, null, artistVertex.getDocumentHandle(), artField.getDocumentHandle());
                 edgesCounter++;
             }
@@ -145,7 +141,7 @@ public class ArtistsTest {
                 List<DBPediaArtwork> artworks = DBPediaSparqlQuerier.getAtristArtwork(artist.getWikiPageID());
                 DBPediaTime += System.currentTimeMillis() - DBPediaTempTime;
                 for (DBPediaArtwork artwork : artworks) {
-                    DocumentEntity<DBPediaArtwork> artworkEntity = getOrCreateVertex(arangoDriver, graphName, artworkCollectionName, artwork.getName(), artwork, DBPediaArtwork.class);
+                    DocumentEntity<DBPediaArtwork> artworkEntity = ArangoDAL.getOrCreateVertex(arangoDriver, graphName, artworkCollectionName, artwork.getName(), artwork, DBPediaArtwork.class);
                     arangoDriver.graphCreateEdge(graphName, createdByEdgeCollection, null, artworkEntity.getDocumentHandle(), artistVertex.getDocumentHandle());
                     edgesCounter++;
                 }
@@ -160,97 +156,16 @@ public class ArtistsTest {
         System.out.format("Total DBPedia time was \u001B[32m[%.4f seconds]\u001B[0m\n", DBPediaTime/ 1000.0);
     }
 
-    public static <T> DocumentEntity<T> getOrCreateVertex(ArangoDriver arangoDriver, String graphName, String collectionName, String key, T verticeObject, Class objectType) throws ArangoException {
-        String cleanKey = key.replace("ref%3E ","");
-        if(cleanKey.equals("")) return null;
-        cleanKey = cleanText(cleanKey);
-
-        DocumentEntity<T> tVertexEntity = null;
-        try {
-            if (arangoDriver.exists(collectionName, cleanKey))
-                tVertexEntity = arangoDriver.getDocument(collectionName, cleanKey, objectType);
-            else
-                tVertexEntity = arangoDriver.graphCreateVertex(graphName, collectionName, cleanKey, verticeObject, true);
-        } catch(ArangoException e) {
-            System.out.println("Collection: " + collectionName + " Key: " + key + " | CleanKey: " + cleanKey);
-            throw e;
-        }
-        return tVertexEntity;
-    }
-
-    private static String cleanText(String key) {
-        String cleanKey = key.replace(" ", "_");
-        cleanKey = cleanKey.replace("&","and");
-        cleanKey = cleanKey.replace("~","_");
-        cleanKey = cleanKey.replace("+","_");
-        cleanKey = cleanKey.replace("-","_");
-        cleanKey = cleanKey.replace("*","_");
-        cleanKey = cleanKey.replace("^","_");
-
-        cleanKey = Normalizer.normalize(cleanKey, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "").toUpperCase();
-        return cleanKey;
-    }
-
     private static void setUpArtistEdgesAndVertices(ArangoDriver arangoDriver, GraphEntity graph) throws ArangoException {
         List<String> existingCollections = new LinkedList<String>();
         for(EdgeDefinitionEntity existingEdge : graph.getEdgeDefinitions())
             existingCollections.add(existingEdge.getCollection());
 
-        addCollectionIfNotExists(arangoDriver, existingCollections, bornInEdgeCollection, artistsCollectionName, locationsCollectionName, graphName);
-        addCollectionIfNotExists(arangoDriver, existingCollections, deathInEdgeCollection, artistsCollectionName, locationsCollectionName, graphName);
-        addCollectionIfNotExists(arangoDriver, existingCollections, memberOfEdgeCollection, artistsCollectionName, artMovementCollectionName, graphName);
-        addCollectionIfNotExists(arangoDriver, existingCollections, describedByEdgeCollection, artistsCollectionName, artFieldCollectionName, graphName);
-        addCollectionIfNotExists(arangoDriver, existingCollections, createdByEdgeCollection, artworkCollectionName, artistsCollectionName, graphName);
-    }
-
-    private static void addCollectionIfNotExists(ArangoDriver arangoDriver, List<String> existingCollections, String bornInEdgeCollection, String artistsCollectionName, String locationsCollectionName, String graphName) throws ArangoException {
-        if (!existingCollections.contains(bornInEdgeCollection)) {
-            EdgeDefinitionEntity edgeDefinition = new EdgeDefinitionEntity();
-            List<String> from = new ArrayList<String>();
-            from.add(artistsCollectionName);
-            edgeDefinition.setFrom(from);
-            List<String> to = new ArrayList<String>();
-            to.add(locationsCollectionName);
-            edgeDefinition.setTo(to);
-            edgeDefinition.setCollection(bornInEdgeCollection);
-            arangoDriver.graphCreateEdgeDefinition(graphName, edgeDefinition);
-        }
-    }
-
-    private static GraphEntity setUpGraph(ArangoDriver arangoDriver) throws IOException {
-        GraphEntity graph = null;
-        try {
-            if(arangoDriver.getGraphList().contains(graphName))
-                return arangoDriver.getGraph(graphName);
-            graph = arangoDriver.createGraph(graphName,true);
-        } catch (ArangoException e) {
-            System.out.println("Failed to delete graph; " + e.getMessage());
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            br.readLine();
-        }
-        return graph;
-    }
-
-    private static void setUpDB(ArangoDriver arangoDriver) {
-        try {
-            if(!arangoDriver.getDatabases().getResult().contains(dbName)) {
-                arangoDriver.createDatabase(dbName);
-                System.out.println("Database created: " + dbName);
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to create database " + dbName + "; " + e.getMessage());
-        }
-        arangoDriver.setDefaultDatabase(dbName);
-    }
-
-    private static ArangoDriver getArangoDriver() {
-        ArangoConfigure configure = new ArangoConfigure();
-        configure.init();
-        configure.setUser("root");
-        configure.setPassword("");
-        configure.setArangoHost(new ArangoHost("127.0.0.1",8529));
-        configure.init();
-        return new ArangoDriver(configure);
+        ArangoDAL.addEdgeCollectionIfNotExists(arangoDriver, existingCollections, bornInEdgeCollection, artistsCollectionName, locationsCollectionName, graphName);
+        ArangoDAL.addEdgeCollectionIfNotExists(arangoDriver, existingCollections, deathInEdgeCollection, artistsCollectionName, locationsCollectionName, graphName);
+        ArangoDAL.addEdgeCollectionIfNotExists(arangoDriver, existingCollections, memberOfEdgeCollection, artistsCollectionName, artMovementCollectionName, graphName);
+        ArangoDAL.addEdgeCollectionIfNotExists(arangoDriver, existingCollections, describedByEdgeCollection, artistsCollectionName, artFieldCollectionName, graphName);
+        ArangoDAL.addEdgeCollectionIfNotExists(arangoDriver, existingCollections, createdByEdgeCollection, artworkCollectionName, artistsCollectionName, graphName);
     }
 
 }

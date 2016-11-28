@@ -1,12 +1,12 @@
-package GraphItems;
+package graphItems;
 
 /**
  * Created by Amit on 11/10/2016.
  */
 
-public class Location {
+public class ArtField {
     public String Name;
-    public Location(String name) {
+    public ArtField(String name) {
         Name = name;
     }
     // getter and setter

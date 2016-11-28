@@ -1,4 +1,4 @@
-package GraphItems;
+package graphItems;
 
 /**
  * Created by Amit on 11/10/2016.
